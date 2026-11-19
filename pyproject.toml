@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docusign-crm-envelope-sender"
+version = "0.1.0"
+description = "When a CRM deal (HubSpot, GoHighLevel, Zoho) reaches a stage, generate the contract, get a person's approval, send it with DocuSign, and write the signing status, signed PDF and certificate back."
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = [
+  "fastapi==0.163.1",
+  "uvicorn==0.54.0",
+  "httpx==0.28.1",
+  "PyYAML==6.0.3",
+  "PyJWT==2.15.1",
+  "cryptography==50.0.2",
+  "fpdf2==2.9.0",
+]
+
+[project.scripts]
+esign-crm = "esign_crm.cli:main"
+
+[tool.setuptools]
+packages = ["esign_crm", "esign_crm.crm"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+timeout = 60
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B"]
+ignore = ["E501"]

@@ -1,0 +1,519 @@
+{
+  "run": "2026-11-19, DocuSign developer (demo) account + Zoho CRM test org, server reached through a Cloudflare quick tunnel",
+  "proven_live": [
+    "JWT grant + userinfo (account-d.docusign.com)",
+    "Zoho deal read + DocuSign fields created and written back (CRM API v8)",
+    "signed stage webhook accepted, bad signature rejected (401)",
+    "human approval API -> envelope created (eSignature REST v2.1, embedded signer)",
+    "embedded signing session (recipient view) signed in a browser",
+    "DocuSign Connect per-envelope webhooks with HMAC-SHA256: sent, delivered, completed, voided",
+    "void through the API with reason",
+    "signed PDF + certificate of completion downloaded and hashed",
+    "hash-chained audit log verified (audit-verify)"
+  ],
+  "steps": [
+    {
+      "step": "make-deal",
+      "deal_id": "7683390000000748009",
+      "contact_id": "7683390000000749001"
+    },
+    {
+      "step": "trigger",
+      "http": 200,
+      "body": {
+        "status": "ok",
+        "results": [
+          "pending_approval"
+        ]
+      }
+    },
+    {
+      "step": "trigger-with-bad-signature",
+      "http": 401
+    },
+    {
+      "step": "zoho-readback",
+      "deal_id": "7683390000000748009",
+      "Deal_Name": "Website rebuild (live test A)",
+      "Stage": "Proposal/Price Quote",
+      "DocuSign_Status": "pending_approval",
+      "DocuSign_Envelope_ID": null,
+      "DocuSign_Completed_At": null
+    },
+    {
+      "step": "approve",
+      "http": 200,
+      "body": {
+        "status": "sent"
+      }
+    },
+    {
+      "step": "sign-url",
+      "http": 302,
+      "host": "apps-d.docusign.com"
+    },
+    {
+      "step": "void",
+      "http": 200,
+      "body": {
+        "status": "voided"
+      }
+    },
+    {
+      "step": "zoho-readback",
+      "deal_id": "7683390000000748009",
+      "Deal_Name": "Website rebuild (live test A)",
+      "Stage": "Proposal/Price Quote",
+      "DocuSign_Status": "voided",
+      "DocuSign_Envelope_ID": "5b512cd6-7ebf-860a-80e5-9748e8b81395",
+      "DocuSign_Completed_At": null
+    },
+    {
+      "step": "make-deal",
+      "deal_id": "7683390000000757001",
+      "contact_id": "7683390000000756001"
+    },
+    {
+      "step": "trigger",
+      "http": 200,
+      "body": {
+        "status": "ok",
+        "results": [
+          "pending_approval"
+        ]
+      }
+    },
+    {
+      "step": "trigger-with-bad-signature",
+      "http": 401
+    },
+    {
+      "step": "approve",
+      "http": 200,
+      "body": {
+        "status": "sent"
+      }
+    },
+    {
+      "step": "zoho-readback",
+      "deal_id": "7683390000000757001",
+      "Deal_Name": "Website rebuild (live test B)",
+      "Stage": "Proposal/Price Quote",
+      "DocuSign_Status": "completed",
+      "DocuSign_Envelope_ID": "bd552033-b46e-8ed7-8013-cb61d7b9138e",
+      "DocuSign_Completed_At": "2026-11-19T10:56:00Z"
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "status": "voided",
+      "envelope_id": "5b512cd6-7ebf-860a-80e5-9748e8b81395",
+      "pdf_sha256": "55d061bd7a62b94058180780c909f6e7843bfc5f04d73565005b524503d49354",
+      "signed_sha256": null,
+      "certificate_sha256": null,
+      "reason": "Layout fix: signature box overlapped the name line; new version follows"
+    },
+    {
+      "id": 2,
+      "status": "completed",
+      "envelope_id": "bd552033-b46e-8ed7-8013-cb61d7b9138e",
+      "pdf_sha256": "7008376451d679f0fe9b51d4482aae09b2d3edddfe33bbb9731b93c3fa872c17",
+      "signed_sha256": "e09545ad5156957d09d1dcddd3e339f01421df2097fa476bcb162bb8078cfdc2",
+      "certificate_sha256": "7f7c754d89e2b657e82e57ce13853a4055339e954f806639984d1f7f2c1b195e",
+      "reason": null
+    }
+  ],
+  "audit": [
+    {
+      "seq": 1,
+      "at": 1795085204,
+      "request_id": 1,
+      "actor": "system",
+      "action": "contract_generated",
+      "detail": {
+        "large_amount": false,
+        "pdf_sha256": "55d061bd7a62b94058180780c909f6e7843bfc5f04d73565005b524503d49354",
+        "template_version": "2026-11-19-live"
+      },
+      "hash": "6b43cbe6af899ec40e0439e47ac6ae0c24cf143de675d3d20712d4635685e035"
+    },
+    {
+      "seq": 2,
+      "at": 1795085205,
+      "request_id": 1,
+      "actor": "system",
+      "action": "crm_updated",
+      "detail": {
+        "crm": "zoho",
+        "status": "pending_approval"
+      },
+      "hash": "fb1f174e3f842b717fead39a841d44fe9d144bbf56a793167ee9ff8ab398cd94"
+    },
+    {
+      "seq": 3,
+      "at": 1795085213,
+      "request_id": 1,
+      "actor": "api-approver",
+      "action": "approved",
+      "detail": {
+        "confirm_large": false
+      },
+      "hash": "5d27805fa760a7bd42eb21e9a0f4ec5a82eb7b9d91ae09874432e586a7e228c1"
+    },
+    {
+      "seq": 4,
+      "at": 1795085218,
+      "request_id": 1,
+      "actor": "system",
+      "action": "envelope_sent",
+      "detail": {
+        "envelope_id": "5b512cd6-7ebf-860a-80e5-9748e8b81395",
+        "mode": "embedded"
+      },
+      "hash": "86b9c615b5d28595429dfc5d0b7f3e0e17e14fa4ffcd03d993e577252725a918"
+    },
+    {
+      "seq": 5,
+      "at": 1795085219,
+      "request_id": 1,
+      "actor": "system",
+      "action": "crm_updated",
+      "detail": {
+        "crm": "zoho",
+        "status": "sent"
+      },
+      "hash": "b6c5ab2da70746a94912fe6e2d7c75d08b02eaf279d5c98da988731306fde224"
+    },
+    {
+      "seq": 6,
+      "at": 1795085226,
+      "request_id": 1,
+      "actor": "system",
+      "action": "signing_link_issued",
+      "detail": {},
+      "hash": "5bf364c4e6bcdb6260d22a0177612f15e5de7411e7f00b043cdf3310d6b704e2"
+    },
+    {
+      "seq": 7,
+      "at": 1795085228,
+      "request_id": 1,
+      "actor": "system",
+      "action": "signing_link_issued",
+      "detail": {},
+      "hash": "d5e3ac9f0ddea56f7a613ca93ea0c3d17229fe46f24f0a607c5c4e63db517586"
+    },
+    {
+      "seq": 8,
+      "at": 1795085239,
+      "request_id": 1,
+      "actor": "system",
+      "action": "connect_event",
+      "detail": {
+        "envelope_id": "5b512cd6-7ebf-860a-80e5-9748e8b81395",
+        "event_name": "envelope-sent"
+      },
+      "hash": "f7627aa42d3906380d588abddcce461eb25e29b6e12a08b2f25cdc24a47a8427"
+    },
+    {
+      "seq": 9,
+      "at": 1795085246,
+      "request_id": 1,
+      "actor": "system",
+      "action": "signing_link_issued",
+      "detail": {},
+      "hash": "0687b4f2b72671ba05ffc7203988d56d9e22d7e03a96a0b937e0d389a4e69a38"
+    },
+    {
+      "seq": 10,
+      "at": 1795085254,
+      "request_id": 1,
+      "actor": "system",
+      "action": "signing_link_issued",
+      "detail": {},
+      "hash": "2963270f3ba24c840f025b84e2a5974699ee2fd6e29a981b7ac4e4c7d55ce172"
+    },
+    {
+      "seq": 11,
+      "at": 1795085262,
+      "request_id": 1,
+      "actor": "system",
+      "action": "signing_link_issued",
+      "detail": {},
+      "hash": "f1f74e2dba29a951a0294ad8534a5984fa1595a816f74007237faa65f61b5c00"
+    },
+    {
+      "seq": 12,
+      "at": 1795085302,
+      "request_id": 1,
+      "actor": "system",
+      "action": "connect_event",
+      "detail": {
+        "envelope_id": "5b512cd6-7ebf-860a-80e5-9748e8b81395",
+        "event_name": "envelope-delivered"
+      },
+      "hash": "5b1ff184f671296c192411ed9d646e5f7f42a703b1b187c79598d7097fe49948"
+    },
+    {
+      "seq": 13,
+      "at": 1795085302,
+      "request_id": 1,
+      "actor": "system",
+      "action": "delivered",
+      "detail": {
+        "envelope_id": "5b512cd6-7ebf-860a-80e5-9748e8b81395",
+        "reason": ""
+      },
+      "hash": "a0eb4452ea8377e0422c99049378e10c6b1c9cefcb15986f30375309dd5f8200"
+    },
+    {
+      "seq": 14,
+      "at": 1795085304,
+      "request_id": 1,
+      "actor": "system",
+      "action": "crm_updated",
+      "detail": {
+        "crm": "zoho",
+        "status": "delivered"
+      },
+      "hash": "ed15151fbf731a3cf4b6c3e552f157de0c00c78266d028b1dadfcb2e0da92128"
+    },
+    {
+      "seq": 15,
+      "at": 1795085322,
+      "request_id": 1,
+      "actor": "api-approver",
+      "action": "void_requested",
+      "detail": {
+        "reason": "Layout fix: signature box overlapped the name line; new version follows"
+      },
+      "hash": "6853998eddd3770dc7f616dce9ed10f2f7946efee37874e369ea58381d0086fb"
+    },
+    {
+      "seq": 16,
+      "at": 1795085322,
+      "request_id": 1,
+      "actor": "system",
+      "action": "voided",
+      "detail": {
+        "envelope_id": "5b512cd6-7ebf-860a-80e5-9748e8b81395",
+        "reason": "Layout fix: signature box overlapped the name line; new version follows"
+      },
+      "hash": "931e550936bed8ad13119314a72d333167f12d743483ff01c9f76979ad3b20df"
+    },
+    {
+      "seq": 17,
+      "at": 1795085324,
+      "request_id": 1,
+      "actor": "system",
+      "action": "crm_updated",
+      "detail": {
+        "crm": "zoho",
+        "status": "voided"
+      },
+      "hash": "d9c59f0bcde381551e026796f1c4596d09ef624620d8d704c7ea1e956c420d85"
+    },
+    {
+      "seq": 18,
+      "at": 1795085343,
+      "request_id": 1,
+      "actor": "system",
+      "action": "connect_event",
+      "detail": {
+        "envelope_id": "5b512cd6-7ebf-860a-80e5-9748e8b81395",
+        "event_name": "envelope-voided"
+      },
+      "hash": "8bd4e6ed5fc1a5227256b8f2f7f426e37618351e0ca9e3d32285af729af6a63d"
+    },
+    {
+      "seq": 19,
+      "at": 1795085371,
+      "request_id": 2,
+      "actor": "system",
+      "action": "contract_generated",
+      "detail": {
+        "large_amount": false,
+        "pdf_sha256": "7008376451d679f0fe9b51d4482aae09b2d3edddfe33bbb9731b93c3fa872c17",
+        "template_version": "2026-11-19-live"
+      },
+      "hash": "12766d0da0c9858fd5f9d7108436ad33c3e435dd4af4f50c75c40679bc4602fe"
+    },
+    {
+      "seq": 20,
+      "at": 1795085372,
+      "request_id": 2,
+      "actor": "system",
+      "action": "crm_updated",
+      "detail": {
+        "crm": "zoho",
+        "status": "pending_approval"
+      },
+      "hash": "b7f9aa76961c26dd1fe40334b1f20b09cab5f3d4c0dca70908660ec5c5c63d7b"
+    },
+    {
+      "seq": 21,
+      "at": 1795085374,
+      "request_id": 2,
+      "actor": "api-approver",
+      "action": "approved",
+      "detail": {
+        "confirm_large": false
+      },
+      "hash": "76c359165f09679f65e08f8c10d82d5f5980673cf916726786e11027abbc03bf"
+    },
+    {
+      "seq": 22,
+      "at": 1795085379,
+      "request_id": 2,
+      "actor": "system",
+      "action": "envelope_sent",
+      "detail": {
+        "envelope_id": "bd552033-b46e-8ed7-8013-cb61d7b9138e",
+        "mode": "embedded"
+      },
+      "hash": "f29a924973ccba957c9186d55f4a4f1b2eead0043d4a557f2225276c13138206"
+    },
+    {
+      "seq": 23,
+      "at": 1795085381,
+      "request_id": 2,
+      "actor": "system",
+      "action": "crm_updated",
+      "detail": {
+        "crm": "zoho",
+        "status": "sent"
+      },
+      "hash": "09fd6bf2fca7f7a76aa83dbf314096ff9593d218b641015f9c0e05badb09729e"
+    },
+    {
+      "seq": 24,
+      "at": 1795085383,
+      "request_id": 2,
+      "actor": "system",
+      "action": "signing_link_issued",
+      "detail": {},
+      "hash": "4960468b2136f8d9acdd32ce2ab598a73f5957aeaa5cfbe6699c515a02851a10"
+    },
+    {
+      "seq": 25,
+      "at": 1795085400,
+      "request_id": 2,
+      "actor": "system",
+      "action": "connect_event",
+      "detail": {
+        "envelope_id": "bd552033-b46e-8ed7-8013-cb61d7b9138e",
+        "event_name": "envelope-sent"
+      },
+      "hash": "4a87fc8bd6331304d6574c11b0dc05d764aa5c6a4217373fa7356da040fd8ebd"
+    },
+    {
+      "seq": 26,
+      "at": 1795085542,
+      "request_id": 2,
+      "actor": "system",
+      "action": "signing_link_issued",
+      "detail": {},
+      "hash": "10a324f960b25acd15c26cc085b5fe9047160c328b265a1795344b8856ec67f6"
+    },
+    {
+      "seq": 27,
+      "at": 1795085554,
+      "request_id": 2,
+      "actor": "system",
+      "action": "signing_link_issued",
+      "detail": {},
+      "hash": "2f54e2b66ec09ad4cee2e9b73cfff0d39308ff09b2c61c4aec4c6b0eb29a6d75"
+    },
+    {
+      "seq": 28,
+      "at": 1795085679,
+      "request_id": 2,
+      "actor": "system",
+      "action": "signing_link_issued",
+      "detail": {},
+      "hash": "503711293b11a89d99757b7fb301550fc43df792655e8b725d01928f98e73623"
+    },
+    {
+      "seq": 29,
+      "at": 1795085721,
+      "request_id": 2,
+      "actor": "system",
+      "action": "signing_link_issued",
+      "detail": {},
+      "hash": "852c7aff49212d151bcaec81a71272a66e9af25ed28e30044305f50361662bb6"
+    },
+    {
+      "seq": 30,
+      "at": 1795085757,
+      "request_id": 2,
+      "actor": "system",
+      "action": "connect_event",
+      "detail": {
+        "envelope_id": "bd552033-b46e-8ed7-8013-cb61d7b9138e",
+        "event_name": "envelope-delivered"
+      },
+      "hash": "6c406db7d2a5936570ba0491ae580d55d96e5df16c0b54fc952d879a042d83a1"
+    },
+    {
+      "seq": 31,
+      "at": 1795085757,
+      "request_id": 2,
+      "actor": "system",
+      "action": "delivered",
+      "detail": {
+        "envelope_id": "bd552033-b46e-8ed7-8013-cb61d7b9138e",
+        "reason": ""
+      },
+      "hash": "faa033020eee4836bf02427f7b7fa69e33d3f18b38479c521ae022793fa02ff8"
+    },
+    {
+      "seq": 32,
+      "at": 1795085758,
+      "request_id": 2,
+      "actor": "system",
+      "action": "crm_updated",
+      "detail": {
+        "crm": "zoho",
+        "status": "delivered"
+      },
+      "hash": "4eca8430348db65d4b5c7114531999dd470d7dc2ee66aa5ec15e1ec17822850f"
+    },
+    {
+      "seq": 33,
+      "at": 1795085782,
+      "request_id": 2,
+      "actor": "system",
+      "action": "connect_event",
+      "detail": {
+        "envelope_id": "bd552033-b46e-8ed7-8013-cb61d7b9138e",
+        "event_name": "envelope-completed"
+      },
+      "hash": "7717cb5bd64c47814b812e9ec1552cbad4c059f4e9b79d1ff6b97c0fb1badc62"
+    },
+    {
+      "seq": 34,
+      "at": 1795085787,
+      "request_id": 2,
+      "actor": "system",
+      "action": "completed",
+      "detail": {
+        "certificate_sha256": "7f7c754d89e2b657e82e57ce13853a4055339e954f806639984d1f7f2c1b195e",
+        "envelope_id": "bd552033-b46e-8ed7-8013-cb61d7b9138e",
+        "signed_sha256": "e09545ad5156957d09d1dcddd3e339f01421df2097fa476bcb162bb8078cfdc2"
+      },
+      "hash": "e5c0717dd30b71376816d0a698d9f6abc74a5837041c96afc52fdc24f8c400e1"
+    },
+    {
+      "seq": 35,
+      "at": 1795085789,
+      "request_id": 2,
+      "actor": "system",
+      "action": "crm_updated",
+      "detail": {
+        "crm": "zoho",
+        "status": "completed"
+      },
+      "hash": "4ebb995b2f0c5e69397f96c68d67c903fa6415806b4059f491b51255c8dfd2a5"
+    }
+  ]
+}

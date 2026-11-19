@@ -1,0 +1,42 @@
+[
+  {
+    "step": "hubspot_webhook",
+    "http": 200,
+    "result": {
+      "status": "ok",
+      "results": [
+        "pending_approval"
+      ]
+    }
+  },
+  {
+    "step": "approve",
+    "http": 200,
+    "result": {
+      "status": "sent"
+    }
+  },
+  {
+    "step": "connect_completed",
+    "http": 200,
+    "result": {
+      "status": "completed"
+    }
+  },
+  {
+    "step": "stored",
+    "status": "completed",
+    "signed_sha256": "2651c1ca0c864d72c7b92f51db262c091be025263df33455a8a2fdf14a665a8c",
+    "certificate_sha256": "7347c5ffd7e5a71b05ec92911f07fa6fa5a6d814de69f9a0c0b046565d4ddc29"
+  },
+  {
+    "step": "crm",
+    "deal": "completed",
+    "notes": 3
+  },
+  {
+    "step": "audit",
+    "intact": true,
+    "rows": 8
+  }
+]

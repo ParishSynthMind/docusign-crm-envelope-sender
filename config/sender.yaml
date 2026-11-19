@@ -1,0 +1,22 @@
+# Settings for the DocuSign CRM envelope sender. No secrets here: those live in the
+# environment or the macOS Keychain (see README, Setup).
+business_name: Acme Consulting Ltd
+environment: demo            # demo (account-d.docusign.com) or production
+crm: hubspot                 # hubspot, ghl or zoho
+trigger_stages:              # the stage id(s) that start a contract, per CRM
+  hubspot: [contractsent]
+  ghl: []                    # put your pipeline stage id here
+  zoho: ["Proposal/Price Quote"]
+template: templates/service_agreement.md
+template_version: "2026-11-17"
+signing_mode: email          # email (DocuSign emails the signer) or embedded (we hand out the link)
+countersigner_name: ""
+countersigner_email: ""
+email_subject: "Please sign: {deal_name}"
+email_blurb: "Hello {client_name}, please review and sign the agreement for {deal_name}."
+return_url: http://localhost:8000/signing-return
+storage_dir: storage
+db_path: data/sender.db
+paused: false                # kill switch
+max_envelopes_per_day: 50
+max_amount: 250000
